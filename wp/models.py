@@ -71,7 +71,7 @@ class Post(models.Model):
     guid = models.CharField(max_length=765)
     
     post_author = models.ForeignKey(WpUser, db_column='post_author')
-    post_parent = models.ForeignKey('self', db_column='post_parent')
+    post_parent = models.IntegerField(default=0)
     
     post_date = models.DateTimeField()
     post_date_gmt = models.DateTimeField()
