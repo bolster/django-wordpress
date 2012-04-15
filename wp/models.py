@@ -71,7 +71,7 @@ class Post(models.Model):
     guid = models.CharField(max_length=765)
     
     post_author = models.ForeignKey(WpUser, db_column='post_author')
-    post_parent = models.IntegerField(default=0)
+    post_parent_id = models.IntegerField(default=0, db_column='post_parent')
     
     post_date = models.DateTimeField()
     post_date_gmt = models.DateTimeField()
@@ -108,6 +108,16 @@ class Post(models.Model):
     def get_absolute_url(self):
         return self.guid
 
+    _post_parent = None
+    @property
+    def post_parent(self):
+        if not self._post_parent:
+            if not self.post_parent_id:
+                self._post_parent = None
+            else:
+                self._post_parent = Post.objects.get(pk=self.post_parent_id)
+        return self._post_parent
+        
 
 class PostMeta(models.Model):
     meta_id = models.IntegerField(primary_key=True)
