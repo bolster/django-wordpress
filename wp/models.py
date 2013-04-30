@@ -1,5 +1,12 @@
 from django.db import models
 
+try:
+    from django.contrib.auth import get_user_model
+except:
+    def get_user_model():
+        from django.contrib.auth.models import User
+        return User
+
 
 class WpUser(models.Model):
     """This has been given a wp prefix, as contrib.user is so commonly
@@ -107,6 +114,19 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return self.guid
+
+    _django_author = None
+    @property
+    def django_author(self):
+        # NOTE: Use of this required you to maintain synchronization between Django and Wordpress users
+        if self._django_author is None:
+            try:
+                User = get_user_model()
+                self._django_author = User.objects.get(pk=self.post_author_id)
+            except User.DoesNotExist:
+                pass
+        return self._django_author
+
 
     _post_parent = None
     @property
